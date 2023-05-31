@@ -43,8 +43,8 @@ Our network, inspired mainly by the ([paper]((https://arxiv.org/pdf/1802.07094.p
 - We introduced a detection mask for blocking perturbation of the optical flow. This helped to reduced the error, especially at low speed where motion of of other vehicles have a greater impact on the optical flow.
 - The network is modular, in the sens that each sub-modules can be independently changed. For future work, if existing at time of the reading, a more up to date network can be used. Another possibility would be to use a custom network (for example, made by other students) for predicting the depth.
 -  The velocities of the other vehicle is not implemented yet, however, it could be implemented by inverting the detection mask and predicting their ground truth. This is something which has been done in ([this paper](https://arxiv.org/abs/1802.07094)).
-- As a downside, our network is sensible to the sampling frequency of the camera. Our trained model use a sampling frequency of 10Hz, the same as the KITTI-Raw dataset. In addtion, the setup of the camera is important too, for having a sufficient front road visualization. By augmenting the dataset, a more robust model could be learned, for example for having a different point of view. For those reason, the inference test is probably not as accurate as our testing set. Concerning the sampling frequency, it could be only a scaling factor.
-- 
+- As a downside, our network is sensible to the sampling frequency of the camera. Our trained model use a sampling frequency of 10Hz, the same as the KITTI-Raw dataset. In addtion, the setup of the camera is important too, for having a sufficient front road visualization. By augmenting the dataset, a more robust model could be learned, for example for having a different point of view. For those reasons, the inference test is probably not as accurate as our testing set. Concerning the sampling frequency, it could be only a scaling factor.
+
 Overall, our model performed great results with a smaller RMSE than the original paper. However, they used a bigger dataset than us and further experiments and training should still be computed for validation.
 
 ## Setup
