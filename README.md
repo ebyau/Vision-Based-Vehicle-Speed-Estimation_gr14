@@ -2,7 +2,7 @@
 This repository implements a deep learning based ego-vehicle speed estimator using three sub-modules : A depth estimator ([DPT](https://github.com/isl-org/DPT)), an optical flow ([RAFT](https://github.com/princeton-vl/RAFT)) and a detector ([YOLOv8](https://github.com/ultralytics/ultralytics)). 
 
 ## Dataset
-We trained our model on RGB videos from thtree categories of the Kitti dataset : road, residential and city.  EXPLAIN HOW WE SEPARATE DATA BETWEEN TRAIN VAL TEST
+We trained our model on RGB videos from thtree categories of the ([KITTI-Raw](https://www.cvlibs.net/datasets/kitti/raw_data.php)) dataset : road, residential and city. The three categories are usefull for having a wide variety of velocities, traffic load as well as multiple scene. The videos have been randomly selecte to create three datasets (training, validation and testing). Each dataset contains frames of road, residential and city categories, and their percentage is relative to the overall numbers of frames per category. Each frame of a video can only be seen on one of the dataset, so that there is no data leakage across training, validation and testing.
 
 ## Method
 Our model takes as input RGB videos and feed it to an optical flow estimator, a depth estimator and a detector. We test two setup. In the first one "with mask", the detector is used to find regions in the image where elements (such as cars, or tramways) that could perturbate the speed estimation are. For example, a car in front of us coming in the opposite direction might cause the model think that speed is higher that what it actually is, as shown in [this paper](https://arxiv.org/pdf/1907.06989.pdf). The detection is used to zeroe those corresponding regions in the optical flow and depth predictions. Then, these predictions are concatenated (optical flow from two images, depth from the most recent image in time) within a single tensor and feeded into our neural network.
@@ -44,14 +44,7 @@ To setup our model, you first need to get DPT, RAFT and YOLOv8 and their depende
 `pip install -r requirements.txt`
 
 ### Setup Dataset
-Place your dataset in the "dataset" folder, using the following data structure:
-   
-    ├── dataset                 # Test files (alternatively `spec` or `tests`)
-    │   ├── file1               # Load and stress tests
-    │   │   ├── file1           # Load and stress tests
-    │   │   └── unit            # Unit tests
-    │   ├── integration         # End-to-end, integration tests (alternatively `e2e`)
-    │   └── unit                # Unit tests
+To download the KITTI dataset, the original ([script](https://github.com/Deepak3994/Kitti-Dataset)) has been modified in order to separate the categories and keeping only the relative data (RGB images from camera 2 and oxts file where the ego-vehicle speed is recorded). The `raw_data_downloader.sh` can be run to extract the dataset, with its first argument the path to saving directory and second argument for the temporary directory used for unzipping and deleting non-usefull data.
 
 
 ### Preprocess Data
