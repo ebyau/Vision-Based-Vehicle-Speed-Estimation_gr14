@@ -1,4 +1,5 @@
 from torch.utils.data import DataLoader, Dataset
+from torchvision import transforms
 import os
 from PIL import Image
 import datetime
@@ -169,8 +170,93 @@ class KittiDataset(Dataset):
     if self.example:
       return oxts, img_raw, timestamps, drive, idx_sample
     elif self.preprocessed: 
-      #return oxts, img_depth.to(self.device), img_flow.to(self.device), detection.to(self.device)
-      #return oxts.to(self.device), img_depth.to(self.device), img_flow.to(self.device), detection.to(self.device)
       return oxts, img_depth, img_flow, detection
     else:
       return oxts, img_raw
+
+
+################################### DLAV DATASET ###############################
+# USED FOR INFERENCE
+
+class DlavDataset(Dataset):
+  def __init__(self, root_dir, scene_name=None, crop_values=None, preprocessed_dataset=False, window_size=2, load_for_example=False):
+    # parameters
+    self.preprocessed = preprocessed_dataset
+    self.window_size = window_size
+    self.example = load_for_example
+    self.zfill_size=5
+    self.crop_values = crop_values
+    self.transform  = transforms.Compose([transforms.CenterCrop((360,1224)), transforms.ToTensor()]) # before : 370, 1224
+    
+    # raw directories
+    self.img_raw_dir = root_dir
+    self.scene = scene_name
+
+    # preprocessed directories
+    self.img_depth_dir = os.path.join(root_dir, 'depth/')
+    self.img_flow_dir = os.path.join(root_dir, 'optical_flow/')
+    self.detection_dir = os.path.join(root_dir, 'detection/')
+
+    if self.preprocessed==False:
+      self.tot_length = len(os.listdir(self.img_raw_dir)) - self.window_size + 1
+    else:
+      self.tot_length = len(os.listdir(self.img_flow_dir)) - self.window_size + 1
+
+
+  def __len__(self):
+    return self.tot_length
+  
+  def __getitem__(self, idx):
+    idx = idx+1 # image names start at 1
+    # get all data in window size
+    img_raw = []
+    img_depth = []
+    img_flow = []
+    detection = []
+    for i in range(self.window_size):
+      if self.preprocessed==False:
+        idx_sample = idx + i
+        idx_string =  self.scene + '_' + str(idx_sample).zfill(self.zfill_size)
+        # print(idx_string)
+
+        img_raw_path = os.path.join(self.img_raw_dir, idx_string + '.png')
+        img = Image.open(img_raw_path)
+        if self.crop_values == None:
+          img = self.transform(img)
+        else:
+          t=self.crop_values[0]
+          l=self.crop_values[1]
+          h=self.crop_values[2]
+          w=self.crop_values[3]
+          img = transforms.functional.to_tensor(img)
+          img = transforms.functional.crop(img,t,l,h,w)#100,348,360,1224)
+        img_raw.append(img)
+
+      else:
+        idx_sample = idx + i + 1
+        idx_string = str(idx_sample).zfill(self.zfill_size)
+
+        img_depth_path = os.path.join(self.img_depth_dir, idx_string + '.pt')
+        img_depth.append(torch.load(img_depth_path, map_location=torch.device('cpu')))
+
+        img_flow_path = os.path.join(self.img_flow_dir, idx_string + '.pt')
+        img_flow.append(torch.load(img_flow_path, map_location=torch.device('cpu')))
+
+        detection_path = os.path.join(self.detection_dir, idx_string + '.pt')
+        detection.append(torch.load(detection_path, map_location=torch.device('cpu')))
+          
+    # convert to tensor
+    if self.preprocessed:
+      img_depth = torch.stack(img_depth)
+      img_flow = torch.stack(img_flow)
+      detection = torch.stack(detection)
+    else:
+      img_raw = torch.stack(img_raw)
+
+    if self.example:
+      return img_raw, idx_sample
+    elif self.preprocessed: 
+      return img_depth, img_flow, detection
+    else:
+      return img_raw
+
