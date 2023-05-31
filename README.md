@@ -65,3 +65,5 @@ To train or model your own data, first make sure that the data structure is corr
 ## Test
 To test our model on your own data, first make sure that the data structure is correct and that the preprocessing has been done properly, and then simply run `inference.py`. 
  
+## Further Improvements
+Filter output, increase window size, RNN
