@@ -6,6 +6,8 @@ import datetime
 from dateutil import parser
 import linecache
 import json
+import numpy as np
+import torch
 
 class KittiDataset(Dataset):
   def __init__(self, root_dir, preprocessed_dataset=False, window_size=2, measurement_keywords=['vf', 'vl', 'vu'], device='cpu', load_for_example=False, mode='train', split_ratio=[60,20,20], categories=['all']):
