@@ -1,14 +1,9 @@
-numpy
 torch
-time
 torchvision
 matplotlib
-timm
 ultralytics
-sys
-os
 Pillow
+timm
 DateTime
-python-dateutil
 opencv-python
 
