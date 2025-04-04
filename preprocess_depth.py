@@ -17,7 +17,7 @@ from torchvision import datasets, transforms
 from model import dlavNet
 from dataset import KittiDataset, DlavDataset
 
-USE_GPU = False
+USE_GPU = True
 
 # PIL transform
 to_pil = transforms.ToPILImage()
@@ -46,7 +46,7 @@ depth_net.to(device)
 depth_net = depth_net.eval()  # Set into evaluation mode
 
 # Dataset directory
-dataset_dir = '/dataset_kitti'
+dataset_dir = 'dataset_kitti/'
 
 # Set seed
 torch.manual_seed(0)

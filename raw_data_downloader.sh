@@ -370,16 +370,16 @@ for category in "${!categories[@]}"; do
         echo "Downloading... "
         wget -q --show-progress 'https://s3.eu-central-1.amazonaws.com/avg-kitti/raw_data/'$fullname -P $dataset_tmp
         echo "Unzipping... "
-        unzip -o -q $dataset_tmp$shortname -d $dataset_tmp$category'/'
+        unzip -o -q $dataset_tmp/$shortname -d $dataset_tmp/$category/
         if [ "$drive_file" == "true" ]
         then
-            folder=$dataset_tmp$category'/'${shortname:0:10}'/'${shortname:0:-4}
+            folder=$dataset_tmp'/'$category'/'${shortname:0:10}'/'${shortname:0:-4}
             rm -r $folder'/image_00'
             rm -r $folder'/image_01'
             rm -r $folder'/image_03'
             rm -r $folder'/velodyne_points'
         fi
-        rm $dataset_tmp$shortname
+        rm $dataset_tmp/$shortname
         rsync -r --remove-sent-files $dataset_tmp $dataset_dir
         
     done
