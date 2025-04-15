@@ -152,22 +152,22 @@ class KittiDataset(Dataset):
         timestamps.append(parser.parse(linecache.getline(timestamp_file, idx+1)))
 
         img_raw_path = os.path.join(img_raw_dir, idx_string + '.png')
-        img_raw.append(self.transform(Image.open(img_raw_path)))
-
+        img_raw.append(self.transform(Image.open(img_raw_path)))     
       
-      # convert to tensor
+
+    else:
+      return None, None, None, drive, idx_sample
+    
+    # convert to tensor
       # oxts = torch.tensor(oxts)
-      if self.preprocessed:
+    if self.preprocessed:
         oxts = torch.stack(oxts)
         img_depth = torch.stack(img_depth)
         img_flow = torch.stack(img_flow)
         detection = torch.stack(detection)
-      else:
+    else:
         # oxts = torch.tensor(oxts)
         img_raw = torch.stack(img_raw)
-
-    else:
-      return None, None, None, drive, idx_sample
 
     if self.example:
       return oxts, img_raw, timestamps, drive, idx_sample

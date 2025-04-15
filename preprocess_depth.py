@@ -46,12 +46,13 @@ depth_net.to(device)
 depth_net = depth_net.eval()  # Set into evaluation mode
 
 # Dataset directory
-dataset_dir = 'dataset_kitti/'
+dataset_dir = 'kitti_dir/'
 
 # Set seed
 torch.manual_seed(0)
-
+print('creating dataset ...')
 kitti_dataset = KittiDataset(dataset_dir, load_for_example=True)
+print('dataset created')
 for (_, img_pair, _, drive, idx_sample) in kitti_dataset:
     if not os.path.exists(dataset_dir + '/' + drive + '/depth'):
         depth_folder = dataset_dir + '/' + drive + '/depth'

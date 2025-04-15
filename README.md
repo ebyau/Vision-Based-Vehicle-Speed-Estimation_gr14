@@ -2,7 +2,12 @@
 This repository implements a deep learning based ego-vehicle speed estimator using three sub-modules : A depth estimator ([DPT](https://github.com/isl-org/DPT)), an optical flow ([RAFT](https://github.com/princeton-vl/RAFT)) and a detector ([YOLOv8](https://github.com/ultralytics/ultralytics)). 
 
 ## Dataset
-We trained our model on RGB videos from thtree categories of the ([KITTI-Raw](https://www.cvlibs.net/datasets/kitti/raw_data.php)) dataset : road, residential and city. The three categories are usefull for having a wide variety of velocities, traffic load as well as multiple scene. The videos have been randomly selecte to create three datasets (training, validation and testing). Each dataset contains frames of road, residential and city categories, and their percentage is relative to the overall numbers of frames per category. Each frame of a video can only be seen on one of the dataset, so that there is no data leakage across training, validation and testing.
+We trained our model on RGB videos from thtree categories of the ([KITTI-Raw](https://www.cvlibs.net/datasets/kitti/raw_data.php)) dataset : road, residential and city. The three categories are usefull for having a wide variety of velocities, traffic load as well as multiple scene. The videos have been randomly selected to create three datasets (training, validation and testing). Each dataset contains frames of road, residential and city categories, and their percentage is relative to the overall numbers of frames per category. Each frame of a video can only be seen on one of the dataset, so that there is no data leakage across training, validation and testing.  
+`bash raw_data_downloader.sh <dataset_dir> <temp_dataset_dir>`
+
+Organize the directory  
+`mv <dataset_dir>/<temp_dataset_dir>/* dataset_dir/`  
+`rm -r <dataset_dir>/<temp_dataset_dir>`
 
 ## Method
 Our model takes as input RGB videos and feed it to an optical flow estimator, a depth estimator and a detector. We test two setup. In the first one "with mask", the detector is used to find regions in the image where elements (such as cars, or tramways) that could perturbate the speed estimation are. For example, a car in front of us coming in the opposite direction might cause the model think that speed is higher that what it actually is, as shown in [this paper](https://arxiv.org/pdf/1907.06989.pdf). The detection is used to zero those corresponding regions in the optical flow and depth predictions. Then, these predictions are concatenated (optical flow from two images, depth from the most recent image in time) within a single tensor and feeded into our neural network.
